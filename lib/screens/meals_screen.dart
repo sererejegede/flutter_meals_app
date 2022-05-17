@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../dummy_data.dart';
 import '../models/category.dart';
 import '../models/meal.dart';
 import '../widgets/meal_item.dart';
 
 class MealsScreen extends StatefulWidget {
   static const routeName = 'meals';
+  final List<Meal> availableMeals;
 
-  const MealsScreen({Key? key}) : super(key: key);
+  const MealsScreen({
+    Key? key,
+    required this.availableMeals,
+  }) : super(key: key);
 
   @override
   State<MealsScreen> createState() => _MealsScreenState();
@@ -22,7 +25,7 @@ class _MealsScreenState extends State<MealsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     category = ModalRoute.of(context)?.settings.arguments as Category;
-    meals = dummyMeals
+    meals = widget.availableMeals
         .where((meal) => meal.categories.contains(category.id))
         .toList();
   }

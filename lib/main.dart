@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import './dummy_data.dart';
+import './models/meal.dart';
+import './screens/filters_screen.dart';
+import './screens/meal_detail.dart';
 import './screens/meals_screen.dart';
 import './screens/tabs_screen.dart';
 
@@ -7,19 +11,75 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<Meal> _availableMeals = dummyMeals;
+  final List<Meal> _favoriteMeals = [];
+  var _filters = {
+    'isGlutenFree': true,
+    'isLactoseFree': true,
+    'isVegan': true,
+    'isVegetarian': false
+  };
+
+  void _saveFilters(Map<String, bool> filters) {
+    setState(() {
+      _filters = filters;
+
+      _availableMeals = dummyMeals.where((meal) {
+        if (filters['isGlutenFree']! && !meal.isGlutenFree) return false;
+        if (filters['isLactoseFree']! && !meal.isLactoseFree) return false;
+        if (filters['isVegan']! && !meal.isVegan) return false;
+        if (filters['isVegetarian']! && !meal.isVegetarian) return false;
+        return true;
+      }).toList();
+    });
+  }
+
+  void _setFavourite(Meal meal) {
+    setState(() {
+      _favoriteMeals.add(meal);
+    });
+  }
+
+  void _removeFromFavourite(String mealId) {
+    setState(() {
+      _favoriteMeals.removeWhere((meal) => meal.id == mealId);
+    });
+  }
+
+  bool _isFavourite(String mealId) {
+    return _favoriteMeals.any((meal) => meal.id == mealId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.cyan,
-      ),
-      // home: CategoriesScreen(),
+      theme:
+          ThemeData(primarySwatch: Colors.cyan, fontFamily: 'RobotoCondensed'),
       routes: {
-        '/': (_) => const TabsScreen(),
-        MealsScreen.routeName: (_) => const MealsScreen()
+        '/': (_) => TabsScreen(
+              favouriteMeals: _favoriteMeals,
+              removeFromFavourite: _removeFromFavourite,
+              setFavourite: _setFavourite,
+            ),
+        MealsScreen.routeName: (_) => MealsScreen(
+              availableMeals: _availableMeals,
+            ),
+        MealDetail.routeName: (_) => MealDetail(
+              setFavourite: _setFavourite,
+              isFavourite: _isFavourite,
+            ),
+        FiltersScreen.routeName: (_) => FiltersScreen(
+              currentFilters: _filters,
+              saveFilters: _saveFilters,
+            ),
       },
     );
   }

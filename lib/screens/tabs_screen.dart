@@ -3,30 +3,61 @@ import 'package:flutter/material.dart';
 import './categories_screen.dart';
 import './favourites_screen.dart';
 import '../dummy_data.dart';
+import '../models/meal.dart';
+import '../widgets/main_drawer.dart';
 
 class TabsScreen extends StatefulWidget {
-  const TabsScreen({Key? key}) : super(key: key);
+  final List<Meal> favouriteMeals;
+  final void Function(String mealId) removeFromFavourite;
+  final void Function(Meal meal) setFavourite;
+
+  const TabsScreen({
+    Key? key,
+    required this.favouriteMeals,
+    required this.removeFromFavourite,
+    required this.setFavourite,
+  }) : super(key: key);
 
   @override
   State<TabsScreen> createState() => _TabsScreenState();
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  final List<Map<String, dynamic>> _tabs = [
-    {
-      'screen': const CategoriesScreen(categories: dummyCategories),
-      'label': 'Categories',
-    },
-    {
-      'screen': const FavouritesScreen(),
-      'label': 'My Favourites',
-    },
-  ];
+  late List<Map<String, dynamic>> _tabs;
   var _currentIndex = 0;
+
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = [
+      {
+        'screen': const CategoriesScreen(categories: dummyCategories),
+        'label': 'Categories',
+      },
+      {
+        'screen': FavouritesScreen(
+          meals: widget.favouriteMeals,
+          setFavourite: widget.setFavourite,
+          removeFromFavourite: widget.removeFromFavourite,
+        ),
+        'label': 'My Favourites',
+      },
+    ];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final _initialIndex = ModalRoute.of(context)?.settings.arguments;
+    if (_initialIndex != null && _initialIndex is int) {
+      _currentIndex = _initialIndex;
+    }
   }
 
   @override
@@ -35,17 +66,20 @@ class _TabsScreenState extends State<TabsScreen> {
       appBar: AppBar(
         title: Text(_tabs[_currentIndex]['label']),
       ),
+      drawer: const MainDrawer(),
       body: _tabs[_currentIndex]['screen'],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _onTap,
         currentIndex: _currentIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.category),
+            icon: Icon(Icons.category_outlined),
+            activeIcon: Icon(Icons.category),
             label: 'Categories',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.category),
+            activeIcon: Icon(Icons.star),
+            icon: Icon(Icons.star_border),
             label: 'My Favourites',
           ),
         ],
