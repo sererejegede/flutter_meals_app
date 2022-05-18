@@ -45,19 +45,11 @@ class FavouritesScreen extends StatelessWidget {
                       key: Key(meal.id),
                       background: Container(
                         color: Colors.red,
-                        child: Stack(
-                          children: const [
-                            Positioned.fill(
-                              right: 64,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Icon(
-                                  Icons.delete,
-                                  size: 48,
-                                ),
-                              ),
-                            ),
-                          ],
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        child: const Icon(
+                          Icons.delete,
+                          size: 48,
                         ),
                       ),
                       onDismissed: (_) => _onRemoveFavourite(meal, context),
