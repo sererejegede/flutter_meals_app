@@ -18,7 +18,9 @@ class FavouritesScreen extends StatelessWidget {
 
   void _onRemoveFavourite(Meal meal, BuildContext context) {
     removeFromFavourite(meal.id);
-    ScaffoldMessenger.of(context).showSnackBar(
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    scaffoldMessenger.hideCurrentSnackBar();
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 3),
         content: Text(
@@ -43,6 +45,36 @@ class FavouritesScreen extends StatelessWidget {
                     (meal) => Dismissible(
                       direction: DismissDirection.endToStart,
                       key: Key(meal.id),
+                      confirmDismiss: (_) {
+                        return showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return AlertDialog(
+                                title: Text(
+                                  meal.title,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                content: const Text(
+                                  'Are you sure you want to remove this meal from your favourites?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop(true);
+                                    },
+                                    child: const Text('YES'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                    },
+                                    child: const Text('NO'),
+                                  )
+                                ],
+                              );
+                            });
+                      },
                       background: Container(
                         color: Colors.red,
                         alignment: Alignment.centerRight,
