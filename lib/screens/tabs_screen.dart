@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import './categories_screen.dart';
 import './favourites_screen.dart';
-import '../dummy_data.dart';
+import '../components/main_drawer.dart';
+import '../components/modal.dart';
+import '../models/category.dart';
 import '../models/meal.dart';
-import '../widgets/main_drawer.dart';
+import '../widgets/new_category.dart';
 
 class TabsScreen extends StatefulWidget {
   final List<Meal> favouriteMeals;
@@ -25,6 +27,7 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   late List<Map<String, dynamic>> _tabs;
   var _currentIndex = 0;
+  List<Category> _categories = [];
 
   void _onTap(int index) {
     setState(() {
@@ -32,12 +35,20 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
+  void _openAddDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const Modal(child: NewCategory()),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _tabs = [
       {
-        'screen': const CategoriesScreen(categories: dummyCategories),
+        'screen': CategoriesScreen(),
         'label': 'Categories',
       },
       {
@@ -68,6 +79,10 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       drawer: const MainDrawer(),
       body: _tabs[_currentIndex]['screen'],
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openAddDialog,
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _onTap,
         currentIndex: _currentIndex,

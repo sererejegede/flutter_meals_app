@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../models/meal.dart';
 import '../widgets/meal_item.dart';
+import 'new_meal.dart';
 
-class MealsScreen extends StatefulWidget {
+class MealsScreen extends StatelessWidget {
   static const routeName = 'meals';
   final List<Meal> availableMeals;
 
@@ -14,24 +15,11 @@ class MealsScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<MealsScreen> createState() => _MealsScreenState();
-}
-
-class _MealsScreenState extends State<MealsScreen> {
-  late Category category;
-  late List<Meal> meals;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    category = ModalRoute.of(context)?.settings.arguments as Category;
-    meals = widget.availableMeals
+  Widget build(BuildContext context) {
+    final category = ModalRoute.of(context)?.settings.arguments as Category;
+    final meals = availableMeals
         .where((meal) => meal.categories.contains(category.id))
         .toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(category.title),
@@ -41,6 +29,11 @@ class _MealsScreenState extends State<MealsScreen> {
         child: ListView(
           children: meals.map((meal) => MealItem(meal: meal)).toList(),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context)
+            .pushNamed(NewMeal.routeName, arguments: category),
+        child: const Icon(Icons.add),
       ),
     );
   }

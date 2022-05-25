@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './dummy_data.dart';
 import './models/meal.dart';
+import './providers/categories.dart';
+import './providers/meals.dart';
 import './screens/filters_screen.dart';
 import './screens/meal_detail.dart';
 import './screens/meals_screen.dart';
+import './screens/new_meal.dart';
 import './screens/tabs_screen.dart';
 
 void main() {
@@ -59,28 +63,48 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme:
-          ThemeData(primarySwatch: Colors.cyan, fontFamily: 'RobotoCondensed'),
-      routes: {
-        '/': (_) => TabsScreen(
-              favouriteMeals: _favoriteMeals,
-              removeFromFavourite: _removeFromFavourite,
-              setFavourite: _setFavourite,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => Categories(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => Meals(),
+        )
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.indigo,
+          fontFamily: 'RobotoCondensed',
+          inputDecorationTheme: const InputDecorationTheme(
+            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(),
             ),
-        MealsScreen.routeName: (_) => MealsScreen(
-              availableMeals: _availableMeals,
-            ),
-        MealDetail.routeName: (_) => MealDetail(
-              setFavourite: _setFavourite,
-              isFavourite: _isFavourite,
-            ),
-        FiltersScreen.routeName: (_) => FiltersScreen(
-              currentFilters: _filters,
-              saveFilters: _saveFilters,
-            ),
-      },
+          ),
+        ),
+        routes: {
+          '/': (_) => TabsScreen(
+                favouriteMeals: _favoriteMeals,
+                removeFromFavourite: _removeFromFavourite,
+                setFavourite: _setFavourite,
+              ),
+          MealsScreen.routeName: (_) => MealsScreen(
+                availableMeals: _availableMeals,
+              ),
+          NewMeal.routeName: (_) => const NewMeal(),
+          MealDetail.routeName: (_) => MealDetail(
+                setFavourite: _setFavourite,
+                isFavourite: _isFavourite,
+              ),
+          FiltersScreen.routeName: (_) => FiltersScreen(
+                currentFilters: _filters,
+                saveFilters: _saveFilters,
+              ),
+        },
+      ),
     );
   }
 }

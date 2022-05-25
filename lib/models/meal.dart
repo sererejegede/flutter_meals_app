@@ -33,6 +33,24 @@ class Meal {
     required this.isVegetarian,
   });
 
+  factory Meal.fromJson(Map<String, dynamic> json) {
+    return Meal(
+      id: json['id'],
+      title: json['title'],
+      categories: json['categories'],
+      imageUrl: json['imageUrl'],
+      duration: json['duration'],
+      ingredients: json['ingredients'],
+      steps: json['steps'],
+      complexity: json['complexity'],
+      affordability: json['affordability'],
+      isGlutenFree: json['isGlutenFree'],
+      isVegan: json['isVegan'],
+      isVegetarian: json['isVegetarian'],
+      isLactoseFree: json['isLactoseFree'],
+    );
+  }
+
   String complexityText(Complexity complexity) {
     switch (complexity) {
       case Complexity.challenging:
@@ -55,5 +73,22 @@ class Meal {
       case Affordability.luxurious:
         return 3;
     }
+  }
+
+  Map<String, dynamic> get toMap {
+    return {
+      'title': title,
+      'categories': categories,
+      'imageUrl': imageUrl,
+      'duration': duration,
+      'ingredients': ingredients,
+      'steps': steps,
+      'complexity': complexityText(complexity),
+      'affordability': affordabilityCount(affordability),
+      'isGlutenFree': isGlutenFree,
+      'isVegan': isVegan,
+      'isVegetarian': isVegetarian,
+      'isLactoseFree': isLactoseFree
+    };
   }
 }
