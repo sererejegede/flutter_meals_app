@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals/screens/new_meal.dart';
 
 import '../models/meal.dart';
 
@@ -21,14 +22,25 @@ class _MealDetailState extends State<MealDetail> {
 
   List<Widget> listItems(List<String> items) {
     return items
-        .map((item) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
-              child: Text(
-                item,
-                // softWrap: true,
-                style: const TextStyle(fontSize: 16),
+        .map(
+          (item) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                child: Text(
+                  item,
+                  // softWrap: true,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-            ))
+              const Divider(
+                color: Colors.black,
+              ),
+            ],
+          ),
+        )
         .toList();
   }
 
@@ -43,6 +55,20 @@ class _MealDetailState extends State<MealDetail> {
     return Scaffold(
       appBar: AppBar(
         title: Text(meal.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => NewMeal(
+                    meal: meal,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.edit),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

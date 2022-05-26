@@ -60,8 +60,8 @@ const dummyMeals = [
   Meal(
     id: 'm1',
     categories: [
-      'c1',
-      'c2',
+      '-N2nKY7ah_ppebngnbnO',
+      '-N2nQRwpsTgDirlNLHTK',
     ],
     title: 'Spaghetti with Tomato Sauce',
     affordability: Affordability.affordable,
@@ -94,7 +94,7 @@ const dummyMeals = [
   Meal(
     id: 'm2',
     categories: [
-      'c2',
+      '-N2nQRwpsTgDirlNLHTK',
     ],
     title: 'Toast Hawaii',
     affordability: Affordability.affordable,
@@ -122,8 +122,8 @@ const dummyMeals = [
   Meal(
     id: 'm3',
     categories: [
-      'c2',
-      'c3',
+      '-N2nQRwpsTgDirlNLHTK',
+      '-N2nQvekiln8uLfGQxJy',
     ],
     title: 'Classic Hamburger',
     affordability: Affordability.pricey,
@@ -154,7 +154,7 @@ const dummyMeals = [
   Meal(
     id: 'm4',
     categories: [
-      'c4',
+      '-N2nfdbwdi8DdjR0RNGr',
     ],
     title: 'Wiener Schnitzel',
     affordability: Affordability.luxurious,
@@ -189,9 +189,9 @@ const dummyMeals = [
   Meal(
     id: 'm5',
     categories: [
-      'c2'
-          'c5',
-      'c10',
+      '-N2nQRwpsTgDirlNLHTK',
+      '-N2ngM6zidw2jlFxtGcH',
+      '-N2vBgX9LgiZS8O-wlKu',
     ],
     title: 'Salad with Smoked Salmon',
     affordability: Affordability.luxurious,
@@ -225,8 +225,8 @@ const dummyMeals = [
   Meal(
     id: 'm6',
     categories: [
-      'c6',
-      'c10',
+      '-N2ngZY_mYzzvziwHP3k',
+      '-N2vBgX9LgiZS8O-wlKu',
     ],
     title: 'Delicious Orange Mousse',
     affordability: Affordability.affordable,
@@ -261,7 +261,7 @@ const dummyMeals = [
   Meal(
     id: 'm7',
     categories: [
-      'c7',
+      '-N2ngcfRU3JdflM080UL',
     ],
     title: 'Pancakes',
     affordability: Affordability.affordable,
@@ -292,7 +292,7 @@ const dummyMeals = [
   Meal(
     id: 'm8',
     categories: [
-      'c8',
+      '-N2vB_yR21hQkpL5ARWB',
     ],
     title: 'Creamy Indian Chicken Curry',
     affordability: Affordability.pricey,
@@ -325,7 +325,7 @@ const dummyMeals = [
   Meal(
     id: 'm9',
     categories: [
-      'c9',
+      '-N2vBdvYt3tD5xVBvmMP',
     ],
     title: 'Chocolate Souffle',
     affordability: Affordability.affordable,
@@ -374,9 +374,9 @@ const dummyMeals = [
   Meal(
     id: 'm10',
     categories: [
-      'c2',
-      'c5',
-      'c10',
+      '-N2nQRwpsTgDirlNLHTK',
+      '-N2ngM6zidw2jlFxtGcH',
+      '-N2vBgX9LgiZS8O-wlKu',
     ],
     title: 'Asparagus Salad with Cherry Tomatoes',
     affordability: Affordability.luxurious,

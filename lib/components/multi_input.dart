@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'modal.dart';
+import './custom_input_wrapper.dart';
+import './modal.dart';
 
 typedef T = List<String>;
 
@@ -10,53 +11,37 @@ class MultiInputFormField extends FormField<T> {
     required String labelText,
     required BuildContext context,
     required FormFieldSetter<T> onSaved,
+    T? initialValues,
   }) : super(
           key: key,
           onSaved: onSaved,
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          initialValue: initialValues,
           builder: (FormFieldState<T> state) {
-            return Stack(
-              children: [
-                InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => Modal(
-                        child: MultiInput(
-                          state: state,
-                          labelText: labelText,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      state.value?.isNotEmpty ?? false
-                          ? (state.value ?? []).join(', ')
-                          : 'Add $labelText',
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
+            final isEmpty = state.value?.isEmpty ?? true;
+            return CustomInputWrapper(
+              child: Text(
+                isEmpty ? 'Add $labelText' : (state.value ?? []).join(', '),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black.withOpacity(
+                    isEmpty ? .5 : .8,
+                  ),
+                  fontWeight: isEmpty ? FontWeight.normal : FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => Modal(
+                    child: MultiInput(
+                      state: state,
+                      labelText: labelText,
                     ),
                   ),
-                ),
-                const Positioned(
-                  right: 8,
-                  top: 12,
-                  child: Icon(
-                    Icons.select_all,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+                );
+              },
             );
           },
         );

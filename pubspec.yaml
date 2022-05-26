@@ -34,12 +34,13 @@ flutter:
           weight: 700
         - asset: assets/fonts/Raleway-Black.ttf
           weight: 900
-    - family: RobotoCondensed
+    - family: Nunito
       fonts:
-        - asset: assets/fonts/RobotoCondensed-Regular.ttf
-        - asset: assets/fonts/RobotoCondensed-Bold.ttf
+        - asset: assets/fonts/Nunito-Regular.ttf
+        - asset: assets/fonts/Nunito-Bold.ttf
           weight: 700
-        - asset: assets/fonts/RobotoCondensed-Light.ttf
-          weight: 300
-        - asset: assets/fonts/RobotoCondensed-Italic.ttf
-          style: italic
+    - family: ZillaSlab
+      fonts:
+        - asset: assets/fonts/ZillaSlab-Regular.ttf
+        - asset: assets/fonts/ZillaSlab-Bold.ttf
+          weight: 700

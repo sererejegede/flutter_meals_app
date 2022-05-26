@@ -77,7 +77,22 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.indigo,
-          fontFamily: 'RobotoCondensed',
+          fontFamily: 'Nunito',
+          appBarTheme: const AppBarTheme(
+            titleTextStyle: TextStyle(
+              fontFamily: 'ZillaSlab',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          textTheme: TextTheme(
+            displayMedium: TextStyle(
+              fontFamily: 'ZillaSlab',
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              color: Colors.black.withOpacity(.8),
+            ),
+          ),
           inputDecorationTheme: const InputDecorationTheme(
             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
             border: OutlineInputBorder(
@@ -91,9 +106,7 @@ class _MyAppState extends State<MyApp> {
                 removeFromFavourite: _removeFromFavourite,
                 setFavourite: _setFavourite,
               ),
-          MealsScreen.routeName: (_) => MealsScreen(
-                availableMeals: _availableMeals,
-              ),
+          MealsScreen.routeName: (_) => const MealsScreen(),
           NewMeal.routeName: (_) => const NewMeal(),
           MealDetail.routeName: (_) => MealDetail(
                 setFavourite: _setFavourite,

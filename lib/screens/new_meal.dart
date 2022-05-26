@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:meals/models/category.dart';
 import 'package:meals/models/meal.dart';
 import 'package:meals/providers/categories.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../components/button.dart';
 import '../components/multi_input.dart';
-import '../models/category.dart';
+import '../components/multi_select.dart';
 import '../providers/meals.dart';
+
+enum FoodOption { glutenFree, vegan, vegetarian, lactoseFree }
 
 class NewMeal extends StatefulWidget {
   static const routeName = 'new_meal';
-  const NewMeal({Key? key}) : super(key: key);
+  final Meal? meal;
+  const NewMeal({Key? key, this.meal}) : super(key: key);
 
   @override
   State<NewMeal> createState() => _NewMealState();
@@ -19,9 +22,9 @@ class NewMeal extends StatefulWidget {
 
 class _NewMealState extends State<NewMeal> {
   final _formKey = GlobalKey<FormState>();
-  late Category _category;
 
-  late dynamic _selectedCategories = [];
+  List<Category> _selectedCategories = [];
+  late List<Category> _allCategories;
   late String _title;
   late String _duration;
   late String _imageUrl;
@@ -98,239 +101,238 @@ class _NewMealState extends State<NewMeal> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _category = ModalRoute.of(context)?.settings.arguments as Category;
+    _isGlutenFree = widget.meal?.isGlutenFree ?? false;
+    _isLactoseFree = widget.meal?.isLactoseFree ?? false;
+    _isVegan = widget.meal?.isVegan ?? false;
+    _isVegetarian = widget.meal?.isVegetarian ?? false;
+    _allCategories = context.read<Categories>().categories;
+    _selectedCategories = _allCategories
+        .where((category) =>
+            widget.meal?.categories.contains(category.id) ?? false)
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_category.title),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          margin: const EdgeInsets.only(bottom: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Add a new ',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.8),
-                      fontSize: 22,
-                      fontFamily: 'RaleWay',
-                    ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
                     children: [
-                      TextSpan(
-                        text: _category.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                          constraints: const BoxConstraints(),
+                          icon: Icon(
+                            Icons.arrow_back_sharp,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
                       ),
-                      const TextSpan(text: ' meal')
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            widget.meal != null
+                                ? 'Edit meal'
+                                : 'Add a new meal',
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                TextFormField(
-                  onSaved: (val) {
-                    _title = val!;
-                  },
-                  decoration: const InputDecoration(labelText: 'Title'),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                MultiSelectBottomSheetField(
-                  initialChildSize: 0.6,
-                  buttonIcon: const Icon(
-                    Icons.category,
-                    color: Colors.grey,
+                  const SizedBox(
+                    height: 24,
                   ),
-                  chipDisplay: MultiSelectChipDisplay.none(),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(4),
+                  TextFormField(
+                    initialValue: widget.meal?.title,
+                    onSaved: (val) {
+                      _title = val!;
+                    },
+                    decoration: const InputDecoration(labelText: 'Title'),
                   ),
-                  items: context
-                      .read<Categories>()
-                      .categories
-                      .map(
-                        (category) => MultiSelectItem(
-                          category,
-                          category.title,
-                        ),
-                      )
-                      .toList(),
-                  onConfirm: (val) {
-                    setState(() {
-                      _selectedCategories = val as dynamic;
-                    });
-                  },
-                  onSaved: (val) {
-                    // _selectedCategories = val as dynamic;
-                  },
-                  buttonText: Text(
-                    _selectedCategories.isNotEmpty
-                        ? _selectedCategories
-                            .map((cat) => cat.title)
-                            .toList()
-                            .join(', ')
-                        : 'Choose other categories',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _selectedCategories.isNotEmpty
-                          ? Colors.black.withOpacity(.9)
-                          : Colors.black.withOpacity(.6),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  MultiSelectFormField<Category>(
+                    labelText: 'Choose categories',
+                    options: context.read<Categories>().categories,
+                    titleBuilder: (category) => Text(
+                      category.title,
+                      style: const TextStyle(fontSize: 16),
                     ),
+                    selectedValues: _selectedCategories,
+                    onSaved: (val) {
+                      setState(() {
+                        _selectedCategories = val ?? [];
+                      });
+                    },
                   ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<Affordability>(
-                        menuMaxHeight: 500,
-                        decoration: const InputDecoration(
-                          labelText: 'Affordability',
-                        ),
-                        items: Affordability.values
-                            .map(
-                              (value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(
-                                  _affordabilityText(value),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<Affordability>(
+                          value: widget.meal?.affordability,
+                          menuMaxHeight: 500,
+                          decoration: const InputDecoration(
+                            labelText: 'Affordability',
+                          ),
+                          items: Affordability.values
+                              .map(
+                                (value) => DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    _affordabilityText(value),
+                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (val) {
-                          _affordability = val!;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: DropdownButtonFormField<Complexity>(
-                        menuMaxHeight: 500,
-                        decoration: const InputDecoration(
-                          labelText: 'Complexity',
+                              )
+                              .toList(),
+                          onChanged: (val) {
+                            _affordability = val!;
+                          },
                         ),
-                        items: Complexity.values
-                            .map(
-                              (value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(
-                                  _complexityText(value),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (val) {
-                          _complexity = val!;
-                        },
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  onSaved: (val) {
-                    _imageUrl = val!;
-                  },
-                  validator: (val) {
-                    if (val == null || val == '') {
-                      return 'Please fill this field';
-                    }
-                    if (!val.startsWith(RegExp(r'https://'))) {
-                      return 'URL should start with https://';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(labelText: 'Image URL'),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  onSaved: (val) {
-                    _duration = val!;
-                  },
-                  decoration: const InputDecoration(labelText: 'Duration'),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                MultiInputFormField(
-                  labelText: 'Steps',
-                  context: context,
-                  onSaved: (val) {
-                    if (val != null) {
-                      _steps = val;
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                MultiInputFormField(
-                  labelText: 'Ingredients',
-                  context: context,
-                  onSaved: (val) {
-                    if (val != null) {
-                      _ingredients = val;
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  shrinkWrap: true,
-                  children: [
-                    buildCheckbox('Gluten free?', (val) {
-                      setState(() {
-                        _isGlutenFree = val;
-                      });
-                    }),
-                    buildCheckbox('Lactose free?', (val) {
-                      setState(() {
-                        _isLactoseFree = val;
-                      });
-                    }),
-                    buildCheckbox('Vegan', (val) {
-                      setState(() {
-                        _isVegan = val;
-                      });
-                    }),
-                    buildCheckbox('Vegetarian', (val) {
-                      setState(() {
-                        _isVegetarian = val;
-                      });
-                    }),
-                  ],
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                Button(
-                  loading: _submitting,
-                  onSubmit: onSubmit,
-                )
-              ],
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonFormField<Complexity>(
+                          value: widget.meal?.complexity,
+                          menuMaxHeight: 500,
+                          decoration: const InputDecoration(
+                            labelText: 'Complexity',
+                          ),
+                          items: Complexity.values
+                              .map(
+                                (value) => DropdownMenuItem(
+                                  value: value,
+                                  child: Text(
+                                    _complexityText(value),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (val) {
+                            _complexity = val!;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    initialValue: widget.meal?.imageUrl,
+                    onSaved: (val) {
+                      _imageUrl = val!;
+                    },
+                    validator: (val) {
+                      if (val == null || val == '') {
+                        return 'Please fill this field';
+                      }
+                      if (!val.startsWith(RegExp(r'https://'))) {
+                        return 'URL should start with https://';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(labelText: 'Image URL'),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    initialValue: widget.meal?.duration.toString(),
+                    onSaved: (val) {
+                      _duration = val!;
+                    },
+                    // TODO: add 'mins' as a suffix icon
+                    decoration: const InputDecoration(labelText: 'Duration'),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  MultiInputFormField(
+                    labelText: 'Steps',
+                    context: context,
+                    initialValues: widget.meal?.steps,
+                    onSaved: (val) {
+                      if (val != null) {
+                        _steps = val;
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  MultiInputFormField(
+                    labelText: 'Ingredients',
+                    context: context,
+                    initialValues: widget.meal?.ingredients,
+                    onSaved: (val) {
+                      if (val != null) {
+                        _ingredients = val;
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    shrinkWrap: true,
+                    children: [
+                      buildCheckbox(
+                        'Gluten free?',
+                        FoodOption.glutenFree,
+                        _isGlutenFree,
+                      ),
+                      buildCheckbox(
+                        'Lactose free?',
+                        FoodOption.lactoseFree,
+                        _isLactoseFree,
+                      ),
+                      buildCheckbox(
+                        'Vegan',
+                        FoodOption.vegan,
+                        _isVegan,
+                      ),
+                      buildCheckbox(
+                        'Vegetarian',
+                        FoodOption.vegetarian,
+                        _isVegetarian,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Button(
+                    loading: _submitting,
+                    onSubmit: onSubmit,
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -338,7 +340,7 @@ class _NewMealState extends State<NewMeal> {
     );
   }
 
-  Widget buildCheckbox(String label, Function(bool val) onChanged) {
+  Widget buildCheckbox(String label, FoodOption foodOption, bool value) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -352,7 +354,27 @@ class _NewMealState extends State<NewMeal> {
             label,
             style: const TextStyle(fontSize: 16),
           ),
-          Switch(value: _isGlutenFree, onChanged: onChanged),
+          Switch(
+            value: value,
+            onChanged: (val) {
+              setState(() {
+                switch (foodOption) {
+                  case FoodOption.glutenFree:
+                    _isGlutenFree = val;
+                    break;
+                  case FoodOption.vegan:
+                    _isVegan = val;
+                    break;
+                  case FoodOption.vegetarian:
+                    _isVegetarian = val;
+                    break;
+                  case FoodOption.lactoseFree:
+                    _isLactoseFree = val;
+                    break;
+                }
+              });
+            },
+          ),
         ],
       ),
     );
