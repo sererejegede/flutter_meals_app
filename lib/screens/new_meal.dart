@@ -28,8 +28,8 @@ class _NewMealState extends State<NewMeal> {
   late String _title;
   late String _duration;
   late String _imageUrl;
-  late Affordability _affordability;
-  late Complexity _complexity;
+  late Affordability? _affordability;
+  late Complexity? _complexity;
   late List<String> _steps;
   late List<String> _ingredients;
   var _isGlutenFree = false;
@@ -38,6 +38,22 @@ class _NewMealState extends State<NewMeal> {
   var _isLactoseFree = false;
 
   var _submitting = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _isGlutenFree = widget.meal?.isGlutenFree ?? false;
+    _isLactoseFree = widget.meal?.isLactoseFree ?? false;
+    _isVegan = widget.meal?.isVegan ?? false;
+    _isVegetarian = widget.meal?.isVegetarian ?? false;
+    _complexity = widget.meal?.complexity;
+    _affordability = widget.meal?.affordability;
+    _allCategories = context.read<Categories>().categories;
+    _selectedCategories = _allCategories
+        .where((category) =>
+            widget.meal?.categories.contains(category.id) ?? false)
+        .toList();
+  }
 
   String _complexityText(Complexity complexity) {
     switch (complexity) {
@@ -64,6 +80,7 @@ class _NewMealState extends State<NewMeal> {
   }
 
   void onSubmit() async {
+    final mealsProvider = context.read<Meals>();
     try {
       if (_submitting) return;
       setState(() {
@@ -80,14 +97,18 @@ class _NewMealState extends State<NewMeal> {
         'duration': _duration,
         'ingredients': _ingredients,
         'steps': _steps,
-        'complexity': _complexityText(_complexity),
-        'affordability': _affordabilityText(_affordability),
+        'complexity': _complexity!.index,
+        'affordability': _affordability!.index,
         'isGlutenFree': _isGlutenFree,
         'isVegan': _isVegan,
         'isVegetarian': _isVegetarian,
         'isLactoseFree': _isLactoseFree
       };
-      await context.read<Meals>().addMeal(meal);
+      if (widget.meal != null) {
+        await mealsProvider.updateMeal(meal, widget.meal!.id);
+      } else {
+        await mealsProvider.addMeal(meal);
+      }
       setState(() {
         _submitting = false;
       });
@@ -96,20 +117,6 @@ class _NewMealState extends State<NewMeal> {
       rethrow;
     }
     Navigator.pop(context);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _isGlutenFree = widget.meal?.isGlutenFree ?? false;
-    _isLactoseFree = widget.meal?.isLactoseFree ?? false;
-    _isVegan = widget.meal?.isVegan ?? false;
-    _isVegetarian = widget.meal?.isVegetarian ?? false;
-    _allCategories = context.read<Categories>().categories;
-    _selectedCategories = _allCategories
-        .where((category) =>
-            widget.meal?.categories.contains(category.id) ?? false)
-        .toList();
   }
 
   @override
@@ -194,6 +201,10 @@ class _NewMealState extends State<NewMeal> {
                           decoration: const InputDecoration(
                             labelText: 'Affordability',
                           ),
+                          validator: (val) {
+                            if (val == null) return 'Please fill this field';
+                            return null;
+                          },
                           items: Affordability.values
                               .map(
                                 (value) => DropdownMenuItem(

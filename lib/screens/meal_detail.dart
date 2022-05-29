@@ -23,22 +23,19 @@ class _MealDetailState extends State<MealDetail> {
   List<Widget> listItems(List<String> items) {
     return items
         .map(
-          (item) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
-                child: Text(
-                  item,
-                  // softWrap: true,
-                  style: const TextStyle(fontSize: 16),
-                ),
+          (item) => Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(),
               ),
-              const Divider(
-                color: Colors.black,
-              ),
-            ],
+            ),
+            child: Text(
+              item,
+              // softWrap: true,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
         )
         .toList();

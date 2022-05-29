@@ -27,11 +27,14 @@ class Meals with ChangeNotifier {
 
   Future<void> updateMeal(Map<String, dynamic> meal, String mealId) {
     final body = json.encode(meal);
-    return http.post(_url, body: body).then((value) {
-      final mealId = json.decode(value.body)['name'] as String;
-      meal['id'] = mealId;
-      var newMeal = Meal.fromJson(meal);
-      _meals.add(newMeal);
+    final url = Uri.parse(
+        'https://flutter-meal-app-2aee0-default-rtdb.firebaseio.com/meals/$mealId.json');
+    return http.patch(url, body: body).then((value) {
+      print(json.decode(value.body));
+      // final mealId = json.decode(value.body)['name'] as String;
+      // meal['id'] = mealId;
+      // var newMeal = Meal.fromJson(meal);
+      // _meals.add(newMeal);
     }).catchError((e) => throw e);
   }
 
@@ -49,7 +52,7 @@ class Meals with ChangeNotifier {
   Future<void> saveAllMeals() async {
     for (var meal in dummyMeals) {
       await addMeal(meal.toMap).then((value) {
-        print('saved ${meal.title}');
+        // print('saved ${meal.title}');
       });
     }
   }

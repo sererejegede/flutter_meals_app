@@ -4,7 +4,6 @@ import './categories_screen.dart';
 import './favourites_screen.dart';
 import '../components/main_drawer.dart';
 import '../components/modal.dart';
-import '../models/category.dart';
 import '../models/meal.dart';
 import '../widgets/new_category.dart';
 
@@ -27,7 +26,6 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   late List<Map<String, dynamic>> _tabs;
   var _currentIndex = 0;
-  List<Category> _categories = [];
 
   void _onTap(int index) {
     setState(() {
@@ -48,7 +46,7 @@ class _TabsScreenState extends State<TabsScreen> {
     super.initState();
     _tabs = [
       {
-        'screen': CategoriesScreen(),
+        'screen': const CategoriesScreen(),
         'label': 'Categories',
       },
       {
